@@ -17,9 +17,9 @@ parseLog = many1 $ parseLine <* endOfLine
 parseLine :: Parser LogLine
 parseLine = do
     logDate <- parseDate
-    many1 $ char '\t'
+    char '\t'
     logNick <- takeTill isSpace
-    many1 $ char '\t'
+    char '\t'
     logMessage <- takeTill isEndOfLine
     return $ LogLine logDate logNick logMessage
 
