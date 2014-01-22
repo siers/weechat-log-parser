@@ -6,10 +6,10 @@ import Data.Text.IO as TI (readFile)
 import Data.Char (isSpace)
 import System.Environment (getArgs)
 
-data LogLine = LogLine { date :: LocalTime
-                       , nick :: Text
-                       , message :: Text
-                       } deriving Show
+data LogLine = LogLine LocalTime Text Text 
+
+instance Show LogLine where
+    show (LogLine a b c) = show a ++ " <" ++T.unpack b ++ "> " ++ T.unpack c
 
 parseLog :: Parser [LogLine]
 parseLog = many1 $ parseLine <* endOfLine
@@ -44,11 +44,11 @@ parseDate = do
 printLog :: Either String [LogLine] -> IO ()
 printLog p = case p of
     Left x -> putStrLn $ "Error: " ++ x
-    Right x -> putStrLn $ assembleLine x
+    Right x -> putStrLn $ assembleLog x 
 
-assembleLine :: [LogLine] -> String
-assembleLine (x:xs) = (show $ date x) ++ " <" ++ (T.unpack $ nick x) ++ "> " ++ (T.unpack $ message x) ++ "\n" ++ assembleLine xs
-assembleLine [] = ""
+assembleLog :: [LogLine] -> String
+assembleLog (x:xs) = show x ++ "\n" ++ assembleLog xs
+assembleLog [] = ""
 
 main :: IO ()
 main = do
