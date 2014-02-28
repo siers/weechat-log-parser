@@ -6,7 +6,7 @@ import Data.Text.IO as TI (readFile)
 import Data.Char (isSpace)
 import System.Environment (getArgs)
 
-data LogLine = LogLine LocalTime Text Text 
+data LogLine = LogLine LocalTime Text Text
 
 instance Show LogLine where
     show (LogLine a b c) = show a ++ " <" ++T.unpack b ++ "> " ++ T.unpack c
@@ -44,11 +44,10 @@ parseDate = do
 printLog :: Either String [LogLine] -> IO ()
 printLog p = case p of
     Left x -> putStrLn $ "Error: " ++ x
-    Right x -> putStrLn $ assembleLog x 
-
-assembleLog :: [LogLine] -> String
-assembleLog (x:xs) = show x ++ "\n" ++ assembleLog xs
-assembleLog [] = ""
+    Right x -> putStrLn $ assembleLog x
+    where
+        assembleLog (x:xs) = show x ++ "\n" ++ assembleLog xs
+        assembleLog [] = ""
 
 main :: IO ()
 main = do
