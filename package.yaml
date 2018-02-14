@@ -1,0 +1,16 @@
+name:                wlp
+description:         Weechat log parser
+build-type:          Simple
+default-extensions:  OverloadedStrings
+license: MIT
+
+dependencies:
+  - attoparsec
+  - base
+  - hpack
+  - text
+  - time
+
+executables:
+  wlp:
+    main: WeechatLogParser.hs
