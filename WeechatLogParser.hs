@@ -1,42 +1,42 @@
+{-# LANGUAGE TupleSections #-}
+
 import Control.Applicative
 import Data.Attoparsec.Text
-import Data.Time
+import Data.Char (isSpace)
 import Data.Text as T hiding (count, head)
 import Data.Text.IO as TI (readFile)
-import Data.Char (isSpace)
+import Data.Time
 import System.Environment (getArgs)
 
 data LogLine = LogLine LocalTime Text Text
 
 instance Show LogLine where
-    show (LogLine a b c) = show a ++ " <" ++T.unpack b ++ "> " ++ T.unpack c
+    show (LogLine a b c) = show a ++ " <" ++ T.unpack b ++ "> " ++ T.unpack c
 
 parseLog :: Parser [LogLine]
 parseLog = many1 $ parseLine <* endOfLine
 
 parseLine :: Parser LogLine
 parseLine = do
-    logDate <- parseDate
-    char '\t'
-    logNick <- takeTill isSpace
-    char '\t'
-    logMessage <- takeTill isEndOfLine
-    return $ LogLine logDate logNick logMessage
-
+    LogLine
+        <$> parseDate <* char '\t'
+        <*> takeTill isSpace <* char '\t'
+        <*> takeTill isEndOfLine
 
 parseDate :: Parser LocalTime
 parseDate = do
-    year <- count 4 digit
-    char '-'
-    month <- count 2 digit
-    char '-'
-    day <- count 2 digit
+    (year, month, day) <- (,,) <$>
+        count 4 digit <* char '-' <*>
+        count 2 digit <* char '-' <*>
+        count 2 digit
+
     char ' '
-    hour <- count 2 digit
-    char ':'
-    minute <- count 2 digit
-    char ':'
-    second <- count 2 digit
+
+    (hour, minute, second) <- (,,) <$>
+        count 2 digit <* char ':' <*>
+        count 2 digit <* char ':' <*>
+        count 2 digit
+
     return LocalTime { localDay = fromGregorian (read year) (read month) (read day)
                      , localTimeOfDay = TimeOfDay (read hour) (read minute) (read second)
                      }
