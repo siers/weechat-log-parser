@@ -4,7 +4,7 @@ import Control.Applicative
 import Data.Attoparsec.Text
 import Data.Char (isSpace)
 import Data.Text as T hiding (count, head)
-import Data.Text.IO as TI (readFile)
+import Data.Text.IO as TI (getContents)
 import Data.Time
 import System.Environment (getArgs)
 
@@ -41,15 +41,4 @@ parseDate = do
                      , localTimeOfDay = TimeOfDay (read hour) (read minute) (read second)
                      }
 
-printLog :: Either String [LogLine] -> IO ()
-printLog p = case p of
-    Left x -> putStrLn $ "Error: " ++ x
-    Right x -> putStrLn $ assembleLog x
-    where
-        assembleLog (x:xs) = show x ++ "\n" ++ assembleLog xs
-        assembleLog [] = ""
-
-main :: IO ()
-main = do
-    args <- getArgs
-    TI.readFile (head args) >>= printLog . parseOnly parseLog
+main = mapM_ print . either error id . parseOnly parseLog =<< TI.getContents
