@@ -1,0 +1,30 @@
+- weechat-log-parser
+    I hacked on this a little: https://gist.github.com/Tokiko/8547299
+
+- a very redacted example:
+    % cat sample
+    2016-09-29 09:51:55	-->	ij (~ij@2001:) has joined #developerslv
+    2016-09-29 12:12:05	-->	andisss (~andissss@80.23) has joined #developerslv
+    2016-09-29 13:14:32	<--	ArtMon (~fam@cri) has quit (Quit: =P)
+    2016-09-29 13:32:12	<--	emilsp (~emilsp@enu) has quit (Ping timeout: 244 seconds)
+    2016-09-29 16:18:43	-->	zn (~zn@unaff) has joined #developerslv
+    2016-09-29 09:51:55	--	Topic set by ij (~ij@unaffiliated/ij) on Fri, 18 Dec 201…
+    2016-09-29 09:51:59	--	Channel created on Tue, 03 Sep 2013 15:57:06
+    2016-09-29 09:52:42	ij	Es jau
+    2016-09-29 09:58:17	ij	\o
+
+    % cabal build && cabal run wlp < sample
+    Preprocessing executable 'wlp' for wlp-0.0.0..
+    Building executable 'wlp' for wlp-0.0.0..
+    Preprocessing executable 'wlp' for wlp-0.0.0..
+    Building executable 'wlp' for wlp-0.0.0..
+    Running wlp...
+    LogJoin {logTime = 2016-09-29 09:51:55, user = "ij", addr = "2001:"}
+    LogJoin {logTime = 2016-09-29 12:12:05, user = "andisss", addr = "80.23"}
+    LogPart {logTime = 2016-09-29 13:14:32, user = "ArtMon", addr = "cri"}
+    LogPart {logTime = 2016-09-29 13:32:12, user = "emilsp", addr = "enu"}
+    LogJoin {logTime = 2016-09-29 16:18:43, user = "zn", addr = "unaff"}
+    LogMsg {logTime = 2016-09-29 09:51:55, user = "--", msg = "Topic set by ij (~ij@…
+    LogMsg {logTime = 2016-09-29 09:51:59, user = "--", msg = "Channel created on Tu…
+    LogMsg {logTime = 2016-09-29 09:52:42, user = "ij", msg = "Es jau "}
+    LogMsg {logTime = 2016-09-29 09:58:17, user = "ij", msg = "\\o"}
