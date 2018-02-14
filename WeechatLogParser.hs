@@ -35,20 +35,13 @@ parseLine = do
 
 parseDate :: Parser LocalTime
 parseDate = do
-    (year, month, day) <- (,,) <$>
-        count 4 digit <* char '-' <*>
-        count 2 digit <* char '-' <*>
-        count 2 digit
+    (y, mo, d) <- (,,) <$> dsep 4 '-' <*> dsep 2 '-' <*> dsep 2 ' '
+    (h, mi, s) <- (,,) <$> dsep 2 ':' <*> dsep 2 ':' <*> count 2 digit
 
-    char ' '
+    return LocalTime
+        { localDay = fromGregorian (read y) (read mo) (read d)
+        , localTimeOfDay = TimeOfDay (read h) (read mi) (read s) }
 
-    (hour, minute, second) <- (,,) <$>
-        count 2 digit <* char ':' <*>
-        count 2 digit <* char ':' <*>
-        count 2 digit
-
-    return LocalTime { localDay = fromGregorian (read year) (read month) (read day)
-                     , localTimeOfDay = TimeOfDay (read hour) (read minute) (read second)
-                     }
+    where dsep n c = count n digit <* char c
 
 main = mapM_ print . either error id . parseOnly parseLog =<< TI.getContents
