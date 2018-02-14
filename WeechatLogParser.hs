@@ -14,8 +14,8 @@ import System.Environment (getArgs)
 
 data LogLine =
     LogMsg { logTime :: LocalTime, user :: Text, msg :: Text }
-    | LogJoin { logTime :: LocalTime, msg :: Text }
-    | LogPart { logTime :: LocalTime, msg :: Text }
+    | LogJoin { logTime :: LocalTime, user :: Text, addr :: Text }
+    | LogPart { logTime :: LocalTime, user :: Text, addr :: Text }
     deriving Show
 
 parseLog :: Parser [LogLine]
@@ -26,12 +26,18 @@ parseLine = do
     date <- parseDate <* char '\t'
     userOrAction <- takeTill isSpace <* char '\t'
 
-    log <- return . snd . fromJust . List.find fst $
-        [ (userOrAction == "-->", LogJoin)
-        , (userOrAction == "<--", LogPart)
-        , (True, flip LogMsg userOrAction) ]
+    if userOrAction == "-->" || userOrAction == ">"
+    then uncurry (LogJoin date) <$> parseUser
+    else if userOrAction == "<--" || userOrAction == "<"
+    then uncurry (LogPart date) <$> parseUser
+    else LogMsg date userOrAction <$> takeTill isEndOfLine
 
-    log date <$> takeTill isEndOfLine
+parseUser :: Parser (Text, Text)
+parseUser = (,)
+    <$> takeTill isSpace <* char ' '
+    <*> (char '(' *> until '@' *> until ')' <* takeTill isEndOfLine)
+
+    where until c = takeTill (== c) <* char c
 
 parseDate :: Parser LocalTime
 parseDate = do
